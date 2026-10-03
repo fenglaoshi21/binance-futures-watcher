@@ -1,0 +1,46 @@
+{
+  "code": 0,
+  "data": {
+    "api_key": {
+      "expires_at": "2026-11-01T19:29:09Z",
+      "remaining_days": 30,
+      "expired": false
+    },
+    "rate_limits": {
+      "coinglass": {
+        "available": true,
+        "limit": 10,
+        "used": 0,
+        "remaining": 10,
+        "window_seconds": 60,
+        "reset_after_seconds": 0,
+        "enabled": true,
+        "plan": "standard"
+      },
+      "lsr": {
+        "available": true,
+        "limit": 10,
+        "used": 0,
+        "remaining": 10,
+        "window_seconds": 60,
+        "reset_after_seconds": 0,
+        "enabled": true,
+        "plan": "standard"
+      }
+    },
+    "mcp": {
+      "authorized": false,
+      "enabled": false,
+      "endpoint": "/mcp"
+    },
+    "websocket": {
+      "enabled": false,
+      "connection_limit": 1,
+      "channel_limit": 5,
+      "control_rate_limit": 10,
+      "keepalive_seconds": 30,
+      "ticket_endpoint": "/api/gateway/ws-ticket",
+      "endpoint": "/ws/coinglass"
+    }
+  }
+}
