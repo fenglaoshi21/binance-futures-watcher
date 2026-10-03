@@ -4,9 +4,9 @@
  */
 import { createClient } from '@supabase/supabase-js'
 
-// 从环境变量或硬编码（前端用 anon key 是安全的）
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+// Supabase anon key 是设计给前端用的公开 key，可安全硬编码
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://sywfhxkdtpbolfjkctii.supabase.co'
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_3KvpuKjsHKGB3DKO2rn57Q_M3cHYQXZ'
 
 export const supabase = SUPABASE_URL
   ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
