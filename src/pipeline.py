@@ -56,16 +56,21 @@ class ObservationPipeline:
         self.use_db = use_db
         self.db = None
         self.rag = None
+        self.db_error = None
+        self.db_connected = False
 
         if use_db and supabase_url and supabase_key:
             try:
                 self.db = SupabaseDB(url=supabase_url, service_key=supabase_key)
                 self.rag = RAGManager(llm_client=self.llm, db=self.db)
+                self.db_connected = True
                 print("[Pipeline] 数据库连接成功，RAG已启用")
             except Exception as e:
+                self.db_error = str(e)
                 print(f"[Pipeline] 数据库连接失败: {e}，将跳过数据库操作")
                 self.use_db = False
         elif use_db:
+            self.db_error = "未配置 Supabase 凭证 (url或key为空)"
             print("[Pipeline] 未配置 Supabase 凭证，将跳过数据库操作")
             self.use_db = False
 
@@ -126,6 +131,7 @@ class ObservationPipeline:
         # ===== Step 4: 存储 =====
         print(f"\n[Step 4/4] 存储观测记录...")
         obs_id = None
+        db_write_error = None
         if self.use_db and self.db and embedding:
             try:
                 saved = self.db.save_full_observation(
@@ -139,9 +145,17 @@ class ObservationPipeline:
                 obs_id = saved["id"]
                 print(f"  已写入数据库: id={obs_id}")
             except Exception as e:
+                db_write_error = str(e)
                 print(f"  数据库写入失败: {e}")
         else:
-            print("  跳过数据库存储")
+            skip_reason = []
+            if not self.use_db:
+                skip_reason.append("use_db=False")
+            if not self.db:
+                skip_reason.append("db=None")
+            if not embedding:
+                skip_reason.append("embedding为空")
+            print(f"  跳过数据库存储 ({', '.join(skip_reason)})")
 
         # ===== 完成 =====
         elapsed = (datetime.now(timezone.utc) - start_time).total_seconds()
@@ -165,6 +179,14 @@ class ObservationPipeline:
             "embedding_dim": len(embedding),
             "db_id": obs_id,
             "elapsed_seconds": elapsed,
+            "debug": {
+                "use_db": self.use_db,
+                "db_connected": self.db_connected,
+                "db_error": self.db_error,
+                "db_write_error": db_write_error,
+                "supabase_url": os.getenv("SUPABASE_URL", "")[:30] + "..." if os.getenv("SUPABASE_URL") else None,
+                "supabase_key_length": len(os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")),
+            },
         }
 
 
