@@ -6,9 +6,6 @@ on:
     - cron: "*/30 * * * *"
   # 支持手动触发
   workflow_dispatch:
-  # 推送main分支时触发（用于测试）
-  push:
-    branches: [main]
 
 jobs:
   scan:
